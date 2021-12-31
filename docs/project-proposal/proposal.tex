@@ -1,0 +1,36 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{hyperref}
+
+\bibliographystyle{czechiso}
+
+\author{Svätopluk Hanzel}
+\title{Project proposal}
+
+\begin{document}
+	\begin{center}
+		{\large ZPJa}\\
+		{\large Project proposal}\\\vspace{0.5cm}
+		{\Huge Reinvent the Wheel - GRU}\\\vspace{0.5cm}
+		Svätopluk Hanzel (\href{mailto:xhanze10@stud.fit.vutbr.cz}{xhanze10@stud.fit.vutbr.cz})\\
+	\end{center}
+	\vspace{2em}
+
+	\paragraph{Selected topic} For this project I chose \textit{Reinvent the Wheel - GRU} mainly because I like reimplementing the basic to learn their inner workings.
+	\paragraph{Project goals} I'll try to implement a basic \textit{Gated Recurrent Unit} (GRU) network in C++. I'll be implementing all the forward and backward passes, matrix operations, etc. I'll first try a simple character prediction on a dataset of names and if this goes well, I'll try to create a model capable of generating whole sentences.
+	\paragraph{Potentially useful datasets}
+		\begin{itemize}
+			\item \href{https://www.kaggle.com/kumazaki98/dinosaur-list}{Dinosaur names}
+			\item \href{https://www.kaggle.com/kaggle/us-baby-names}{US Baby names}
+			\item \href{https://www.kaggle.com/sherinclaudia/sarcastic-comments-on-reddit}{Sarcastic comments on Reddit} (probably filtered to a single tag)
+		\end{itemize}
+	
+	\vspace{2cm}
+	\nocite{*}
+    \bibliography{references}
+\end{document}

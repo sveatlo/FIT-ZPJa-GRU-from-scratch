@@ -1,0 +1,29 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi:\discretionary{}{}{}#1}\else
+  \providecommand{\doi}{doi:\discretionary{}{}{}\begingroup
+  \urlstyle{rm}\Url}\fi
+\providecommand{\selectlanguage}[1]{\relax}
+\providecommand{\eprint}[2][]{\url{#2}}
+
+\bibitem{cho2014learning}
+Cho, K.; van Merrienboer, B.; Gulcehre, C.; aj. \emph{Learning Phrase
+  Representations using RNN Encoder-Decoder for Statistical Machine
+  Translation} 2014 \eprint{1406.1078}.
+
+\bibitem{58337}
+{Werbos}, P.~J. \emph{Backpropagation through time: what it does and how to do
+  it} \emph{Proceedings of the IEEE} ročník~78, č.~10 1990: s. 1550--1560
+  \doi{10.1109/5.58337}.
+
+\bibitem{colahs-lstm}
+\emph{Understanding LSTM Networks}
+  \urlprefix\url{https://colah.github.io/posts/2015-08-Understanding-LSTMs/}.
+
+\bibitem{tfs-gru}
+\emph{Understanding GRU Networks}
+  \urlprefix\url{https://towardsdatascience.com/understanding-gru-networks-2ef37df6c9be}.
+
+\end{thebibliography}
