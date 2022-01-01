@@ -13,9 +13,9 @@ public:
 	}
 
 	string name;
-	Matrix<double> v;
-	Matrix<double> d;
-	Matrix<double> m;
+	Matrix<double> v; // value
+	Matrix<double> d; // gradient
+	Matrix<double> m; // memory for adagrad
 };
 
 

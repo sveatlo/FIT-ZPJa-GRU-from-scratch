@@ -11,11 +11,14 @@
 using namespace std;
 
 typedef struct {
+    // main outputs
 	Matrix<double> r;
 	Matrix<double> z;
 	Matrix<double> h_hat;
 	Matrix<double> h;
 	Matrix<double> y;
+	Matrix<double> p;
+    // helpers
 	Matrix<double> x;
 	Matrix<double> h_prev;
 } GRU_step_data;
@@ -61,7 +64,7 @@ private:
 	void reset_grads();
 	void update_params(double lr);
 	GRU_step_data forward_step(Matrix<double> x, Matrix<double> h_prev);
-	GRU_backward_return backward_step(unsigned target_idx, Matrix<double> dh_next, Matrix<double> r, Matrix<double> z, Matrix<double> h_hat, Matrix<double> h, Matrix<double> y, Matrix<double> x, Matrix<double> h_prev);
+	GRU_backward_return backward_step(unsigned target_idx, Matrix<double> dh_next, Matrix<double> r, Matrix<double> z, Matrix<double> h_hat, Matrix<double> h, Matrix<double> y, Matrix<double> p, Matrix<double> x, Matrix<double> h_prev);
 	GRU_forward_backward_return forward_backward(vector<unsigned> x_batch, vector<unsigned> y_batch, Matrix<double> h_prev);
 };
 

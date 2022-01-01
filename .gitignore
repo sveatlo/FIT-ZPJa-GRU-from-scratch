@@ -1,0 +1,3 @@
+dist/
+*.o
+losses.log

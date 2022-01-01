@@ -15,10 +15,11 @@
 typedef struct parameters_s {
 	bool show_help = false;
 	string dataset_filepath = "data/dinos.text";
-	double learning_rate = 0.01;
+	double learning_rate = 0.1;
 	int epochs = 10;
-	int hidden_layers = 100;
+	int hidden_layers = 25;
 	int sequence_len = 25;
+    string weights_output = "";
 } parameters;
 
 parameters parse_parameters(int argc, char **argv);
@@ -43,9 +44,9 @@ int main(int argc, char **argv) {
 	// START
 
 	vector<char> data = read_dataset(p.dataset_filepath);
-	for (char &c : data) {
-		c = tolower(c);
-	}
+	// for (char &c : data) {
+	//     c = tolower(c);
+	// }
 
 	set<char> chars(data.begin(), data.end());
 	unsigned vocab_size = chars.size();
@@ -87,18 +88,25 @@ int main(int argc, char **argv) {
 	cout << endl;
 
 	try {
+        ofstream weights_file;
+        if (p.weights_output != "") {
+            weights_file.open(p.weights_output);
+        }
+
 		GRU nn = GRU(char_to_idx, idx_to_char, vocab_size, p.hidden_layers, p.sequence_len);
 		GRU_training_res res = nn.train(data, p.epochs, p.learning_rate);
 		cout << "================== Training finished =================" << endl;
 
-		// cout << "Losses progress: " << endl;
-		// for (auto &x : res.losses) {
-		//     cout << x << " ";
-		// }
-		// cout << endl << endl;
+        if (p.weights_output != "") {
+            // weights_file << "Losses progress: " << endl;
+            for (auto &x : res.losses) {
+                weights_file << x << " ";
+            }
+            weights_file << endl << endl;
+        }
 
 		Matrix<double> h_prev(p.hidden_layers, 1, 0);
-		cout << nn.sample(100) << endl;
+		cout << nn.sample(1000, data[0]) << endl;
 	} catch (char const *e) {
 		cerr << e << endl;
 	}
@@ -118,11 +126,12 @@ parameters parse_parameters(int argc, char** argv) {
 				{"epochs", no_argument, 0, 'e'},
 				{"hidden-layers", no_argument, 0, 'i'},
 				{"sequence-length", no_argument, 0, 's'},
+				{"weights-output", no_argument, 0, 's'},
 				{0, 0, 0, 0}};
 		/* getopt_long stores the option index here. */
 		int option_index = 0;
 
-		c = getopt_long(argc, argv, "hf:l:e:i:s:", long_options, &option_index);
+		c = getopt_long(argc, argv, "hf:l:e:i:s:o:", long_options, &option_index);
 
 		/* Detect the end of the options. */
 		if (c == -1)
@@ -174,6 +183,10 @@ parameters parse_parameters(int argc, char** argv) {
 			}
 			break;
 
+		case 'o':
+            p.weights_output = string(optarg);
+			break;
+
 		case 'h':
 			p.show_help = true;
 			return p;
@@ -192,6 +205,7 @@ void print_help(string binary_path) {
 	cout << "	-e --epochs\t\tNumber of epochs for training" << endl;
 	cout << "	-i --hidden-layers\t\tNumber of hidden layers" << endl;
 	cout << "	-s --sequence-length\t\tSequence length" << endl;
+	cout << "	-o --weights-output\t\tFile for weights output" << endl;
 }
 
 vector<char> read_dataset(string &filename) {

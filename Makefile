@@ -1,7 +1,7 @@
 .PHONY=run all build pack docs banner
 
 # build variables
-CFLAGS=-g -std=c++11  -lstdc++ -lm #-Wall -Wextra -O2
+CFLAGS=-std=c++11  -lstdc++ -lm -Wall -Wextra -O2
 CC=gcc
 ## which modules should be build
 MODULES=log matrix gru
@@ -44,9 +44,11 @@ stats:
 	@echo -n "Lines of code: " && wc -l $(wildcard $(SRC_DIR)*.cpp $(SRC_DIR)*.h) | tail -n 1 | sed -r "s/[ ]*([0-9]+).*/\1/g"
 	@echo -n "Size of code: " && du -hsc $(wildcard $(SRC_DIR)*.cpp $(SRC_DIR)*.h) | tail -n 1 | cut -f 1
 
+$(DIST_DIR):
+	mkdir -p $(DIST_DIR)
 
 # Link all the modules together
-build: $(DIST_DIR)$(BINARY_NAME)
+build: $(DIST_DIR) $(DIST_DIR)$(BINARY_NAME)
 
 build-prod: build
 	mv $(DIST_DIR)$(BINARY_NAME) ./$(BINARY_NAME)
