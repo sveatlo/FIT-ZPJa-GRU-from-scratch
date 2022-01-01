@@ -78,12 +78,25 @@ void GRU::reset_grads() {
     }
 }
 
-void GRU::update_params(double lr) {
+void GRU::update_params(double lr, int iteration) {
     for (auto &p : this->params) {
-        p.second.m += p.second.d * p.second.d;
+        auto tmp = p.second.d * (1 - this->beta1);
+        p.second.m = (p.second.m * this->beta1) + tmp;
 
-        Matrix<double> tmp = (p.second.m + 1e-8).sqrt();
-        p.second.v += ((p.second.d * lr) / tmp) * -1;
+        tmp = p.second.d * p.second.d;
+        tmp = tmp * (1 - this->beta2);
+        p.second.w = (p.second.w * this->beta2) + tmp;
+
+        auto m_corr = p.second.m / (1 - pow(this->beta1, iteration));
+        auto w_corr = p.second.w / (1 - pow(this->beta2, iteration));
+
+        // 			x[i] = x[i] - alpha * mhat / (sqrt(vhat) + eps)
+        tmp = w_corr.sqrt() + 1e-8;
+        // p.second.v -= (m_corr / tmp) * this->eta;
+        p.second.v -= ((m_corr * this->eta) / tmp);
+
+        // auto tmp = (p.second.m + 1e-8).sqrt();
+        // p.second.v -= (p.second.d * lr) / tmp;
     }
 }
 
@@ -286,13 +299,14 @@ GRU_training_res GRU::train(vector<char> _X, unsigned epochs, double lr = 0.001)
     vector<char> X(_X.begin(), _X.begin() + num_batches * this->seq_len);
     vector<double> losses;
 
+    int iteration = 1;
     for (unsigned epoch = 0; epoch < epochs; epoch++) {
         cout << "Starting epoch no." << epoch << " with " << X.size() / this->seq_len
             << " batches" << endl;
         Matrix<double> h_prev(this->n_h, 1, 0);
 
         // int delete_n = 0;
-        for (unsigned i = 0; i < X.size() - this->seq_len; i += this->seq_len) {
+        for (unsigned i = 0; i < X.size() - this->seq_len; i += this->seq_len, iteration++) {
             int batch_num = epoch * epochs + i / this->seq_len;
             cout << "\rEpoch " << epoch << ": batch " << batch_num << "/" << X.size() / this->seq_len << " (loss: " << this->smooth_loss << ")";
             cout.flush();
@@ -315,7 +329,7 @@ GRU_training_res GRU::train(vector<char> _X, unsigned epochs, double lr = 0.001)
             this->smooth_loss = this->smooth_loss * 0.99 + batch_res.loss * 0.01;
             losses.push_back(this->smooth_loss);
 
-            this->update_params(lr);
+            this->update_params(lr, iteration);
         }
 
         cout << endl;
