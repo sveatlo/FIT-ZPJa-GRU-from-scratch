@@ -13,9 +13,9 @@
 using namespace std;
 
 GRU::GRU(map<char, unsigned> _char_to_idx, map<unsigned, char> _idx_to_char,
-        unsigned _vocab_size, unsigned _n_h, unsigned _seq_len)
+        unsigned _vocab_size, unsigned _n_h, unsigned _seq_len, double _beta1, double _beta2)
     : char_to_idx(_char_to_idx), idx_to_char(_idx_to_char),
-    vocab_size(_vocab_size), n_h(_n_h), seq_len(_seq_len) {
+      vocab_size(_vocab_size), n_h(_n_h), seq_len(_seq_len), beta1(_beta1), beta2(_beta2) {
 
         // Xavier initialization
         double sdw = 1.0/ sqrt(this->vocab_size);
@@ -78,7 +78,7 @@ void GRU::reset_grads() {
     }
 }
 
-void GRU::update_params(double lr, int iteration) {
+void GRU::update_params(double lr, int step) {
     for (auto &p : this->params) {
         auto tmp = p.second.d * (1 - this->beta1);
         p.second.m = (p.second.m * this->beta1) + tmp;
@@ -87,13 +87,13 @@ void GRU::update_params(double lr, int iteration) {
         tmp = tmp * (1 - this->beta2);
         p.second.w = (p.second.w * this->beta2) + tmp;
 
-        auto m_corr = p.second.m / (1 - pow(this->beta1, iteration));
-        auto w_corr = p.second.w / (1 - pow(this->beta2, iteration));
+        auto m_corr = p.second.m / (1 - pow(this->beta1, step));
+        auto w_corr = p.second.w / (1 - pow(this->beta2, step));
 
-        // 			x[i] = x[i] - alpha * mhat / (sqrt(vhat) + eps)
         tmp = w_corr.sqrt() + 1e-8;
         // p.second.v -= (m_corr / tmp) * this->eta;
-        p.second.v -= ((m_corr * this->eta) / tmp);
+        //     self.vars = self.vars - self.lr * self.grads_first_moment_unbiased /(np.sqrt(self.grads_second_moment_unbiased) + self.epsilon)
+        p.second.v -= ((m_corr * lr) / tmp);
 
         // auto tmp = (p.second.m + 1e-8).sqrt();
         // p.second.v -= (p.second.d * lr) / tmp;
@@ -169,27 +169,15 @@ GRU_backward_return GRU::backward_step(
         Matrix<double> z,
         Matrix<double> h_hat,
         Matrix<double> h,
-        Matrix<double> y,
         Matrix<double> p,
         Matrix<double> x,
         Matrix<double> h_prev
 ){
     Matrix<double> tmp;
-    // z
     Matrix<double>& Uz = this->params["Uz"].v;
-    Matrix<double>& Wz = this->params["Wz"].v;
-    Matrix<double>& bz = this->params["bz"].v;
-    // r
     Matrix<double>& Ur = this->params["Ur"].v;
-    Matrix<double>& Wr = this->params["Wr"].v;
-    Matrix<double>& br = this->params["br"].v;
-    // h
     Matrix<double>& Uh = this->params["Uh"].v;
-    Matrix<double>& Wh = this->params["Wh"].v;
-    Matrix<double>& bh = this->params["bh"].v;
-    // y
     Matrix<double>& Wy = this->params["Wy"].v;
-    Matrix<double>& by = this->params["by"].v;
 
     auto hT = h.transpose();
     auto h_prevT = h_prev.transpose();
@@ -247,7 +235,9 @@ GRU_backward_return GRU::backward_step(
 }
 
 GRU_forward_backward_return GRU::forward_backward(vector<unsigned> x_batch, vector<unsigned> y_batch, Matrix<double> h_prev) {
-    vector<GRU_step_data> progress = {GRU_step_data{ .h = h_prev }};
+    GRU_step_data init;
+    init.h = h_prev;
+    vector<GRU_step_data> progress = {init};
 
     double loss = 0;
     for (unsigned t = 0; t < this->seq_len; t++) {
@@ -278,7 +268,6 @@ GRU_forward_backward_return GRU::forward_backward(vector<unsigned> x_batch, vect
             progress.at(t).z,
             progress.at(t).h_hat,
             progress.at(t).h,
-            progress.at(t).y,
             progress.at(t).p,
             progress.at(t).x,
             progress.at(t).h_prev
@@ -299,14 +288,14 @@ GRU_training_res GRU::train(vector<char> _X, unsigned epochs, double lr = 0.001)
     vector<char> X(_X.begin(), _X.begin() + num_batches * this->seq_len);
     vector<double> losses;
 
-    int iteration = 1;
+    int step = 1;
     for (unsigned epoch = 0; epoch < epochs; epoch++) {
         cout << "Starting epoch no." << epoch << " with " << X.size() / this->seq_len
             << " batches" << endl;
         Matrix<double> h_prev(this->n_h, 1, 0);
 
         // int delete_n = 0;
-        for (unsigned i = 0; i < X.size() - this->seq_len; i += this->seq_len, iteration++) {
+        for (unsigned i = 0; i < X.size() - this->seq_len; i += this->seq_len, step++) {
             int batch_num = epoch * epochs + i / this->seq_len;
             cout << "\rEpoch " << epoch << ": batch " << batch_num << "/" << X.size() / this->seq_len << " (loss: " << this->smooth_loss << ")";
             cout.flush();
@@ -329,7 +318,7 @@ GRU_training_res GRU::train(vector<char> _X, unsigned epochs, double lr = 0.001)
             this->smooth_loss = this->smooth_loss * 0.99 + batch_res.loss * 0.01;
             losses.push_back(this->smooth_loss);
 
-            this->update_params(lr, iteration);
+            this->update_params(lr, step);
         }
 
         cout << endl;

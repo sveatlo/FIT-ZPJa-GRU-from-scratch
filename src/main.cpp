@@ -15,7 +15,7 @@
 typedef struct parameters_s {
     bool show_help = false;
     string dataset_filepath = "data/dinos.text";
-    double learning_rate = 0.1;
+    double learning_rate = 0.01;
     int epochs = 10;
     int hidden_layers = 25;
     int sequence_len = 25;
@@ -40,15 +40,14 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-
-    // START
-
+    // preprocessing
     vector<char> data = read_dataset(p.dataset_filepath);
-    // for (char &c : data) {
-    //     c = tolower(c);
-    // }
-
-    set<char> chars(data.begin(), data.end());
+    set<char> chars;
+    for (char &c : data) {
+        c = tolower(c);
+        if (c >= ' ' || c == '\0' || c == '\r' || c == '\n')
+            chars.insert(c);
+    }
     unsigned vocab_size = chars.size();
 
     cout << "data has " << data.size() << " characters, " << vocab_size
@@ -61,11 +60,10 @@ int main(int argc, char **argv) {
         char_to_idx[c] = chars_i;
         idx_to_char[chars_i] = c;
 
-        // cout << c << ":" << chars_i << endl;
-
         chars_i++;
     }
 
+    // print training info
     cout << "======================================================" << endl;
     cout << "Training with following parameters:" << endl;
     cout << "\tlearning rate: " << p.learning_rate << endl;
@@ -89,6 +87,7 @@ int main(int argc, char **argv) {
     if (p.losses_output != "")
         cout << "\toutput_file: " << p.losses_output << endl;
 
+    // start training
     try {
         ofstream weights_file;
         if (p.losses_output != "") {
@@ -100,11 +99,9 @@ int main(int argc, char **argv) {
         cout << "================== Training finished =================" << endl;
 
         if (p.losses_output != "") {
-            // weights_file << "Losses progress: " << endl;
             for (auto &x : res.losses) {
                 weights_file << x << " ";
             }
-            // weights_file << endl << endl;
             weights_file.close();
         }
 

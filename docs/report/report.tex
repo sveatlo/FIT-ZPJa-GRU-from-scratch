@@ -1,0 +1,140 @@
+% This must be in the first 5 lines to tell arXiv to use pdfLaTeX, which is strongly recommended.
+\pdfoutput=1
+% In particular, the hyperref package requires pdfLaTeX in order to break URLs across lines.
+
+\documentclass[11pt]{article}
+
+% Remove the "review" option to generate the final version.
+\usepackage[]{emnlp2021}
+
+% Standard package includes
+\usepackage{times}
+\usepackage{latexsym}
+
+% For proper rendering and hyphenation of words containing Latin characters (including in bib files)
+\usepackage[T1]{fontenc}
+% For Vietnamese characters
+% \usepackage[T5]{fontenc}
+% See https://www.latex-project.org/help/documentation/encguide.pdf for other character sets
+
+% This assumes your files are encoded as UTF8
+\usepackage[utf8]{inputenc}
+
+% This is not strictly necessary, and may be commented out,
+% but it will improve the layout of the manuscript,
+% and will typically save some space.
+\usepackage{microtype}
+
+% If the title and author information does not fit in the area allocated, uncomment the following
+%
+%\setlength\titlebox{<dim>}
+%
+% and set <dim> to something 5cm or larger.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CUSTOM PACKAGES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsfonts}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TABLES, FIGURES, CHARTS...
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{tikz-dependency}
+\usetikzlibrary{shapes.geometric,calc}
+\usetikzlibrary{colorbrewer}
+\usepackage{caption}
+\usepackage{subcaption}
+% Multirows in tables
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
+\usepackage{float}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.14, every non boxed x axis/.append style={x axis line style=-},
+     every non boxed y axis/.append style={y axis line style=-}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MACROS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\todo}[1]{{\color{red}\textbf{[[TODO: #1]]}}}
+
+\newcommand{\BigO}[1]{\ensuremath{\operatorname{O}\bigl(#1\bigr)}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% OTHERS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{lipsum}     % lorem ipsum
+\urlstyle{same}           % pretty urls...
+%\hypersetup{urlcolor=black}
+\usepackage{enumitem}% http://ctan.org/pkg/enumitem
+\usepackage{mathtools}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TITLE SETUP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{
+	ZPJa: Reinvent the Wheel - GRU\\
+	\large{Project report}
+}
+
+\author{Svätopluk Hanzel \\
+  \texttt{xhanze10@stud.fit.vut.cz} \\\And
+  Martin Dočekal\\
+  \texttt{idocekal@fit.vutbr.cz}
+ }
+
+\begin{document}
+\maketitle
+\begin{abstract}
+The ideal abstract should be about 100-200 words long, contain the main goals of the project, and inform the reader about the drawn conclusions. 
+By reading the abstract, the reader gets acquainted with the motivation and the results. Only then does the majority of the readers decide whether to continue reading the rest of the paper. 
+The abstract should neither contain any references to another paper nor it should include mathematical typesetting unless necessary. The use of this \LaTeX~template and proposed report structure is recommended, but it is not mandatory. This template is based on EMNLP 2021 conference template\footnote{\url{https://www.overleaf.com/latex/templates/emnlp-2021-template/hqchdxrsnwjs}}. This typesetting is typical in ACL conferences.
+\end{abstract}
+
+\section{Introduction}
+This is an optional section, which may include the reason why the paper is written including the short motivation for the task. 
+
+\section{Task Definition}
+Each project assignment contains some NLP task. However, the exact framing of the task differs from application to application. This section should include a formal or semi-formal task description. \textbf{You are encouraged to illustrate the problem with a diagram or an example}.
+Do not describe similar tasks or subtasks which are not related to your project. 
+
+\section{Method}
+You can now acquaint the reader with your implemented method. 
+If it is not required by your assignment (e.g. Reinvent the Wheel series), don't describe commonly known facts that you have heard in lectures such as transformer, CNN, and LSTM architectures, but you should focus on \textbf{specific details} and \textbf{training procedure} according to your NLP task. 
+Consult with your supervisor what are the ``commonly known facts'' with respect to your assignment. 
+
+You would need to be strictly formal and accompany the verbal description with clear and consistent maths. 
+Try to describe your model as generally as possible and include implementation details in the following section~\ref{sec:setup}. 
+For inspiration, you can see a short example from our recent paper~\cite{fajcik2021r2d2} in Appendix~\ref{app:reranker}.
+
+\section{Experimental Setup}
+\label{sec:setup}
+The experimental setup should contain all model and training hyperparameters, but also datasets and evaluation process descriptions (e.g. number of trained models per experiment or used metrics). 
+You could also include other implementation details such as used framework or computer parameters, where the models were trained and evaluated.
+
+\section{Results and Analysis}
+In this section, include your experiment results and analysis. \textbf{Please discuss your experimental results appropriately, showing numbers is not enough!} You can also introduce your hypotheses here (e.g., I think the problem with ``blah-blah'' was caused by the model not learning well this and that correlation).
+
+\section{Conclusion}
+In conclusion, you shall summarize the results of your work and draw conclusions from your results. If there were any interesting observations mentioned in the previous part of the technical report, this is a good place to highlight them one last time.
+
+% Entries for the entire Anthology, followed by custom entries
+\bibliographystyle{acl_natbib}
+\nocite{*}
+\bibliography{anthology,custom}
+
+
+\appendix
+
+
+
+\end{document}

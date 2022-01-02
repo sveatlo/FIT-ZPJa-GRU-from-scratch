@@ -1,7 +1,7 @@
 .PHONY=run all build pack docs banner
 
 # build variables
-CFLAGS=-std=c++11  -lstdc++ -lm -g #-Wall -Wextra -O2
+CFLAGS=-std=c++11 -lstdc++ -lm -Wall -Wextra -O2
 CC=gcc
 ## which modules should be build
 MODULES=log matrix gru
@@ -15,7 +15,7 @@ ARCHIVEFILENAME=xhanze10.tar
 # documentation variables
 DOCS_SOURCES=$(DOCS_DIR)manual/documentation.tex $(DOCS_DIR)manual/czechiso.bst \
 	$(DOCS_DIR)manual/references.bib $(DOCS_DIR)manual/Makefile $(DOCS_DIR)manual/images
-PDF_FILENAME=documentation.pdf
+PDF_FILENAME=report.pdf
 
 all: build $(DIST_DIR)$(BINARY_NAME) banner
 
@@ -36,13 +36,13 @@ banner:
 
 dev: build
 
-documentation: $(wildcard $(SRC_DIR)*) $(DOCS_SOURCES)
+documentation: $(wildcard $(SRC_DIR)*)
 	doxygen
-	OUTPUT_PDF=$(PDF_FILENAME) make -C $(DOCS_DIR)manual
+	OUTPUT_PDF=$(PDF_FILENAME) make -C $(DOCS_DIR)/report
 
 stats:
-	@echo -n "Lines of code: " && wc -l $(wildcard $(SRC_DIR)*.cpp $(SRC_DIR)*.h) | tail -n 1 | sed -r "s/[ ]*([0-9]+).*/\1/g"
-	@echo -n "Size of code: " && du -hsc $(wildcard $(SRC_DIR)*.cpp $(SRC_DIR)*.h) | tail -n 1 | cut -f 1
+	@echo -n "Lines of code: " && wc -l $(wildcard $(SRC_DIR)/*.cpp $(SRC_DIR)/*.h) | tail -n 1 | sed -r "s/[ ]*([0-9]+).*/\1/g"
+	@echo -n "Size of code: " && du -hsc $(wildcard $(SRC_DIR)/*.cpp $(SRC_DIR)/*.h) | tail -n 1 | cut -f 1
 
 $(DIST_DIR):
 	mkdir -p $(DIST_DIR)
@@ -65,12 +65,12 @@ $(OBJECT_FILE_PATTERN): $(SRC_DIR)%.cpp $(SRC_DIR)%.h
 
 run: build
 	exec $(DIST_DIR)$(BINARY_NAME)
-pack: $(SRC_DIR)*.cpp $(SRC_DIR)*.h Makefile Doxyfile # documentation
-	mv docs/manual/$(PDF_FILENAME) $(PDF_FILENAME)
+pack: $(SRC_DIR)*.cpp $(SRC_DIR)*.h Makefile Doxyfile documentation
+	mv docs/report/$(PDF_FILENAME) $(PDF_FILENAME)
 	make clean
 	tar cf $(ARCHIVEFILENAME) $(SRC_DIR) $(DIST_DIR) $(DOCS_DIR) data/ $(PDF_FILENAME) Makefile Doxyfile README.md
 clean:
-	make -C $(DOCS_DIR)manual clean
+	make -C $(DOCS_DIR)/report clean
 	rm -rf ./*.o $(DIST_DIR)$(BINARY_NAME) $(DIST_DIR)*.o $(DIST_DIR)*.out $(DIST_DIR)*.a $(DIST_DIR)*.so $(SRC_DIR)*.gch \
 			$(ARCHIVEFILENAME) $(DOCS_DIR)doxygen \
 			$(filter-out $(DOCS_SOURCES) , $(wildcard $(DOCS_DIR)manual/*))
