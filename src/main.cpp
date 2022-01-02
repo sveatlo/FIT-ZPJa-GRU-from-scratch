@@ -14,7 +14,7 @@
 
 typedef struct parameters_s {
     bool show_help = false;
-    string dataset_filepath = "data/dinos.text";
+    string dataset_filepath = "data/dinos.txt";
     double learning_rate = 0.01;
     int epochs = 10;
     int hidden_layers = 25;
@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
     }
 
     // print training info
-    cout << "======================================================" << endl;
+    cout << "===============================================================================" << endl;
     cout << "Training with following parameters:" << endl;
     cout << "\tlearning rate: " << p.learning_rate << endl;
     cout << "\tno. of epochs: " << p.epochs << endl;
@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
 
         GRU nn = GRU(char_to_idx, idx_to_char, vocab_size, p.hidden_layers, p.sequence_len);
         GRU_training_res res = nn.train(data, p.epochs, p.learning_rate);
-        cout << "================== Training finished =================" << endl;
+        cout << "============================== Training finished ==============================" << endl;
 
         if (p.losses_output != "") {
             for (auto &x : res.losses) {
@@ -126,7 +126,7 @@ parameters parse_parameters(int argc, char** argv) {
             {"epochs", no_argument, 0, 'e'},
             {"hidden-layers", no_argument, 0, 'i'},
             {"sequence-length", no_argument, 0, 's'},
-            {"weights-output", no_argument, 0, 's'},
+            {"losses-output", no_argument, 0, 's'},
             {0, 0, 0, 0}};
         /* getopt_long stores the option index here. */
         int option_index = 0;
@@ -205,7 +205,7 @@ void print_help(string binary_path) {
     cout << "	-e --epochs\t\tNumber of epochs for training" << endl;
     cout << "	-i --hidden-layers\t\tNumber of hidden layers" << endl;
     cout << "	-s --sequence-length\t\tSequence length" << endl;
-    cout << "	-o --weights-output\t\tFile for weights output" << endl;
+    cout << "	-o --losses-output\t\tFile for training losses output" << endl;
 }
 
 vector<char> read_dataset(string &filename) {

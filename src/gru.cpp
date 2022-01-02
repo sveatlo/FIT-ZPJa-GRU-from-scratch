@@ -80,6 +80,8 @@ void GRU::reset_grads() {
 
 void GRU::update_params(double lr, int step) {
     for (auto &p : this->params) {
+#define USE_ADAM 1
+#if USE_ADAM
         auto tmp = p.second.d * (1 - this->beta1);
         p.second.m = (p.second.m * this->beta1) + tmp;
 
@@ -91,12 +93,12 @@ void GRU::update_params(double lr, int step) {
         auto w_corr = p.second.w / (1 - pow(this->beta2, step));
 
         tmp = w_corr.sqrt() + 1e-8;
-        // p.second.v -= (m_corr / tmp) * this->eta;
-        //     self.vars = self.vars - self.lr * self.grads_first_moment_unbiased /(np.sqrt(self.grads_second_moment_unbiased) + self.epsilon)
         p.second.v -= ((m_corr * lr) / tmp);
-
-        // auto tmp = (p.second.m + 1e-8).sqrt();
-        // p.second.v -= (p.second.d * lr) / tmp;
+#else
+        p.second.m += p.second.d * p.second.d;
+        auto tmp = (p.second.m + 1e-8).sqrt();
+        p.second.v -= (p.second.d * lr) / tmp;
+#endif
     }
 }
 

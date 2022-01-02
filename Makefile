@@ -1,7 +1,7 @@
 .PHONY=run all build pack docs banner
 
 # build variables
-CFLAGS=-std=c++11 -lstdc++ -lm -Wall -Wextra -O2
+CFLAGS=-std=c++11 -lstdc++ -lm -Wall -Wextra -O3
 CC=gcc
 ## which modules should be build
 MODULES=log matrix gru
@@ -10,7 +10,7 @@ SRC_DIR=src/
 DIST_DIR=dist/
 DOCS_DIR=docs/
 BINARY_NAME=gru-nn
-ARCHIVEFILENAME=xhanze10.tar
+ARCHIVEFILENAME=xhanze10.tar.gz
 
 # documentation variables
 DOCS_SOURCES=$(DOCS_DIR)manual/documentation.tex $(DOCS_DIR)manual/czechiso.bst \
@@ -68,9 +68,8 @@ run: build
 pack: $(SRC_DIR)*.cpp $(SRC_DIR)*.h Makefile Doxyfile documentation
 	mv docs/report/$(PDF_FILENAME) $(PDF_FILENAME)
 	make clean
-	tar cf $(ARCHIVEFILENAME) $(SRC_DIR) $(DIST_DIR) $(DOCS_DIR) data/ $(PDF_FILENAME) Makefile Doxyfile README.md
+	tar zcf $(ARCHIVEFILENAME) $(SRC_DIR) $(DIST_DIR) $(DOCS_DIR) data/ $(PDF_FILENAME) Makefile Doxyfile README.md
 clean:
 	make -C $(DOCS_DIR)/report clean
 	rm -rf ./*.o $(DIST_DIR)$(BINARY_NAME) $(DIST_DIR)*.o $(DIST_DIR)*.out $(DIST_DIR)*.a $(DIST_DIR)*.so $(SRC_DIR)*.gch \
-			$(ARCHIVEFILENAME) $(DOCS_DIR)doxygen \
-			$(filter-out $(DOCS_SOURCES) , $(wildcard $(DOCS_DIR)manual/*))
+			$(ARCHIVEFILENAME) $(DOCS_DIR)doxygen #$(PDF_FILENAME)
